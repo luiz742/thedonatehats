@@ -50,7 +50,7 @@ const logout = () => {
                             <!-- Navigation Links -->
                             <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                                 <NavLink :href="route('kyc.index')" :active="route().current('dashboard')">
-                                    Profile
+                                    KYC
                                 </NavLink>
 
                                 <NavLink :href="route('donations.balance')" :active="route().current('dashboard')">
@@ -239,7 +239,7 @@ const logout = () => {
                     </ResponsiveNavLink>
 
                     <ResponsiveNavLink :href="route('kyc.index')" :active="route().current('kyc.index')">
-                        Profile
+                        KYC
                     </ResponsiveNavLink>
 
                     <ResponsiveNavLink :href="route('donations.balance')"
