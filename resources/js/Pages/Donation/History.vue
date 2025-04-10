@@ -24,6 +24,7 @@ defineProps({
                         <thead>
                             <tr>
                                 <th class="p-3 font-bold uppercase bg-gray-200 text-gray-600 border">Amount</th>
+                                <th class="p-3 font-bold uppercase bg-gray-200 text-gray-600 border">Wallet Address</th>
                                 <th class="p-3 font-bold uppercase bg-gray-200 text-gray-600 border">Expired</th>
                                 <th class="p-3 font-bold uppercase bg-gray-200 text-gray-600 border">Donation Date</th>
                                 <th class="p-3 font-bold uppercase bg-gray-200 text-gray-600 border">Status</th>
@@ -32,14 +33,15 @@ defineProps({
                         <tbody>
                             <tr v-for="donation in donations" :key="donation.id" class="bg-white hover:bg-gray-100">
                                 <td class="p-3 text-gray-800 text-center border">${{ donation.amount }}</td>
+                                <td class="p-3 text-gray-800 text-center border">{{ donation.wallet_address }}</td>
                                 <td class="p-3 text-gray-800 text-center border">{{ donation.expires_at }}</td>
                                 <td class="p-3 text-gray-800 text-center border">{{ new Date(donation.created_at).toLocaleString() }}</td>
                                 <td class="p-3 text-gray-800 text-center border">
                                     <span :class="{
                                         'bg-green-400': donation.status === 'active',
                                         'bg-yellow-400': donation.status === 'pending',
-                                        'bg-red-400': donation.status === 'deleted'
-                                    }" class="rounded py-1 px-3 text-xs font-bold">
+                                        'bg-green-400': donation.status === 'completed'
+                                    }" class="rounded py-1 px-3 text-xs text-dark font-bold">
                                         {{ donation.status.charAt(0).toUpperCase() + donation.status.slice(1) }}
                                     </span>
                                 </td>
@@ -64,7 +66,7 @@ defineProps({
                         <tbody>
                             <tr v-for="deposit in deposits" :key="deposit.transaction_id"
                                 class="bg-white hover:bg-gray-100">
-                                <td class="p-3 text-gray-800 text-center border">{{ deposit.from }}</td>
+                                <td class="p-3 text-gray-800 text-center border">{{ deposit.to }}</td>
                                 <td class="p-3 text-gray-800 text-center border">
                                     {{ (deposit.value / Math.pow(10, deposit.token_info.decimals)).toFixed(2) }} {{
                                     deposit.token_info.symbol }}

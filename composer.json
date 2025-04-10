@@ -16,6 +16,7 @@
         "laravel/jetstream": "^5.3",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.10.1",
+        "spatie/laravel-short-schedule": "^1.6",
         "stephenhill/base58": "^1.1",
         "tightenco/ziggy": "^2.0"
     },

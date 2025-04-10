@@ -13,7 +13,9 @@ class Donation extends Model
         'user_id',
         'amount',
         'status',
-        'expires_at', // <- aqui
+        'expires_at',
+        'wallet_id',
+        'wallet_address'
     ];
 
     public function user()

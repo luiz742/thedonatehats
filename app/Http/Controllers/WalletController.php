@@ -15,47 +15,26 @@ class WalletController extends Controller
 {
     // WalletController.php
 
-    public function tryConfirmPendingDonation($wallet, Donation $donation = null)
+    public function tryConfirmPendingDonation(Wallet $wallet, Donation $donation)
     {
-        $deposits = $this->checkDeposits($wallet->address)['usdt_deposits'];
+        $result = $this->checkDeposits($wallet->address);
 
-        foreach ($deposits as $deposit) {
-            $amount = $deposit['value'] / 1_000_000;
-            $tx_id = $deposit['transaction_id'];
+        if ($result['success'] && !empty($result['usdt_deposits'])) {
+            foreach ($result['usdt_deposits'] as $deposit) {
+                // Verifica se o valor bate com a doação
+                if ((float) $deposit['amount'] == (float) $donation->amount) {
+                    // Atualiza a doação como confirmada
+                    $donation->status = 'completed';
+                    $donation->confirmed_at = now();
+                    $donation->tx_id = $deposit['tx_id'] ?? null;
+                    $donation->save();
 
-            // Ignora se essa transação já foi usada
-            if (Donation::where('tx_id', $tx_id)->exists()) {
-                continue;
-            }
-
-            // Se uma doação específica foi passada, confere só ela
-            if ($donation) {
-                if (
-                    $donation->status === 'pending' &&
-                    $donation->amount == $amount
-                ) {
-                    $donation->update([
-                        'status' => 'confirmed',
-                        'tx_id' => $tx_id,
-                    ]);
-                    break;
-                }
-            } else {
-                // Caso contrário, procura qualquer doação pendente com mesmo valor
-                $match = Donation::where('user_id', $wallet->user_id)
-                    ->where('status', 'pending')
-                    ->where('amount', $amount)
-                    ->orderBy('created_at')
-                    ->first();
-
-                if ($match) {
-                    $match->update([
-                        'status' => 'confirmed',
-                        'tx_id' => $tx_id,
-                    ]);
+                    return true;
                 }
             }
         }
+
+        return false;
     }
 
     public function generate()
