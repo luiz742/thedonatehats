@@ -234,10 +234,34 @@ const logout = () => {
                 <!-- Responsive Navigation Menu -->
                 <div :class="{ 'block': showingNavigationDropdown, 'hidden': !showingNavigationDropdown }"
                     class="sm:hidden">
-                    <div class="pt-2 pb-3 space-y-1">
-                        <ResponsiveNavLink :href="route('dashboard')" :active="route().current('dashboard')">
-                            Dashboard
-                        </ResponsiveNavLink>
+                    <ResponsiveNavLink :href="route('dashboard')" :active="route().current('dashboard')">
+                        Dashboard
+                    </ResponsiveNavLink>
+
+                    <ResponsiveNavLink :href="route('kyc.index')" :active="route().current('kyc.index')">
+                        Profile
+                    </ResponsiveNavLink>
+
+                    <ResponsiveNavLink :href="route('donations.balance')"
+                        :active="route().current('donations.balance')">
+                        Shisha Coin Balance
+                    </ResponsiveNavLink>
+
+                    <ResponsiveNavLink :href="route('donations.history')"
+                        :active="route().current('donations.history')">
+                        Donation History
+                    </ResponsiveNavLink>
+
+                    <ResponsiveNavLink v-if="$page.props.auth.user && $page.props.auth.user.is_admin"
+                        :href="route('admin.users.index')" :active="route().current('admin.users.index')">
+                        Manage Users
+                    </ResponsiveNavLink>
+
+                    <div class="flex items-center px-4">
+                        <Link :href="route('donations.index')"
+                            class="w-full text-center px-4 py-2 rounded-md text-sm font-semibold bg-green-500 text-white hover:bg-green-400 transition-all duration-300">
+                        Donate Now
+                        </Link>
                     </div>
 
                     <!-- Responsive Settings Options -->
