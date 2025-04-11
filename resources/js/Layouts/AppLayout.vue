@@ -49,16 +49,24 @@ const logout = () => {
 
                             <!-- Navigation Links -->
                             <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                                <NavLink :href="route('kyc.index')" :active="route().current('dashboard')">
+                                <NavLink v-if="$page.props.auth.user && !$page.props.auth.user.is_admin"
+                                    :href="route('kyc.index')" :active="route().current('dashboard')">
                                     KYC
                                 </NavLink>
 
-                                <NavLink :href="route('donations.balance')" :active="route().current('dashboard')">
+                                <NavLink v-if="$page.props.auth.user && !$page.props.auth.user.is_admin"
+                                    :href="route('donations.balance')" :active="route().current('dashboard')">
                                     Shisha Coin Balance
                                 </NavLink>
 
-                                <NavLink :href="route('donations.history')" :active="route().current('dashboard')">
+                                <NavLink v-if="$page.props.auth.user && !$page.props.auth.user.is_admin"
+                                :href="route('donations.history')" :active="route().current('dashboard')">
                                     Donation History
+                                </NavLink>
+
+                                <NavLink v-if="$page.props.auth.user && $page.props.auth.user.is_admin"
+                                    :href="route('admin.admin.kycs.index')" :active="route().current('dashboard')">
+                                    KYC
                                 </NavLink>
 
                                 <NavLink v-if="$page.props.auth.user && $page.props.auth.user.is_admin"
