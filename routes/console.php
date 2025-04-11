@@ -6,8 +6,8 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schedule;
 use App\Console\Commands\CheckPendingDonations;
 
-app(Schedule::class)->call(function () {
-    return app(CheckPendingDonations::class)->handle();
+schedule(function () {
+    app(CheckPendingDonations::class)->handle();
 })->everyThirtySeconds();
 
 Artisan::command('inspire', function () {
