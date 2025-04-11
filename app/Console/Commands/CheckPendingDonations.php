@@ -6,6 +6,7 @@ use App\Models\Donation;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use App\Http\Controllers\WalletController;
+use Illuminate\Console\Scheduling\Schedule;
 
 class CheckPendingDonations extends Command
 {
@@ -52,5 +53,10 @@ class CheckPendingDonations extends Command
         }
 
         return 0;
+    }
+
+    public function schedule(Schedule $schedule): void
+    {
+        $schedule->everyThirtySeconds();
     }
 }
