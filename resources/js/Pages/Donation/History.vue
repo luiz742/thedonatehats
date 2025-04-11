@@ -1,9 +1,10 @@
 <script setup>
+import { ref, onMounted } from 'vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
+import axios from 'axios';
 
 defineProps({
     donations: Array,
-    deposits: Array
 });
 </script>
 
@@ -50,41 +51,11 @@ defineProps({
                                             {{ donation.status.charAt(0).toUpperCase() + donation.status.slice(1) }}
                                         </span>
                                     </td>
-                                </tr>
+                                 </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
-
-                <!-- Deposits Table (comentado, mas atualizado com o novo layout também) -->
-                <!--
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg p-6">
-                    <h3 class="text-lg md:text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">Deposits</h3>
-                    <div class="w-full overflow-x-auto">
-                        <table class="min-w-full text-sm md:text-base border-collapse">
-                            <thead>
-                                <tr>
-                                    <th class="p-3 font-bold uppercase bg-gray-200 text-gray-600 border text-left">From</th>
-                                    <th class="p-3 font-bold uppercase bg-gray-200 text-gray-600 border text-left">Amount</th>
-                                    <th class="p-3 font-bold uppercase bg-gray-200 text-gray-600 border text-left">Timestamp</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="deposit in deposits" :key="deposit.transaction_id" class="bg-white hover:bg-gray-100">
-                                    <td class="p-3 text-gray-800 border break-all">{{ deposit.to }}</td>
-                                    <td class="p-3 text-gray-800 border whitespace-nowrap">
-                                        {{ (deposit.value / Math.pow(10, deposit.token_info.decimals)).toFixed(2) }}
-                                        {{ deposit.token_info.symbol }}
-                                    </td>
-                                    <td class="p-3 text-gray-800 border whitespace-nowrap">
-                                        {{ new Date(deposit.block_timestamp).toLocaleString() }}
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                -->
             </div>
         </div>
     </AppLayout>

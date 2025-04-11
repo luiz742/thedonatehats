@@ -13,6 +13,10 @@ use App\Http\Controllers\WalletController;
 
 Route::get('/test-check/{address}', [WalletController::class, 'checkDeposits']);
 
+// Route::prefix('admin')->middleware(['auth', 'verified'])->group(function () {
+
+// });
+
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/wallet', [WalletController::class, 'index'])->name('wallet.index');
@@ -25,6 +29,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
     Route::patch('/users/{user}', [UserController::class, 'update'])->name('users.update');
     Route::patch('/users/{user}/kyc', [UserController::class, 'updateKycStatus'])->name('users.kyc.update');
+
+    Route::get('/kyc', [\App\Http\Controllers\Admin\KycController::class, 'index'])->name('admin.kycs.index');
+    Route::get('/kyc/{id}', [\App\Http\Controllers\Admin\KycController::class, 'show'])->name('admin.kycs.show');
+    Route::post('/kyc/{id}/approve', [\App\Http\Controllers\Admin\KycController::class, 'approve'])->name('admin.kycs.approve');
+    Route::post('/kyc/{id}/reject', [\App\Http\Controllers\Admin\KycController::class, 'reject'])->name('admin.kycs.reject');
 });
 
 

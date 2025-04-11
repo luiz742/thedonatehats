@@ -30,21 +30,28 @@ class DonationController extends Controller
         ]);
     }
 
+    // Controller ajustado
     public function history()
     {
         $user = Auth::user();
 
-        // Pega todas as doações do usuário
         $donations = Donation::with('user')->where('user_id', $user->id)->latest()->get();
+
+        return Inertia::render('Donation/History', [
+            'donations' => $donations,
+        ]);
+    }
+
+    public function fetchDeposits()
+    {
+        $user = Auth::user();
+        $donations = Donation::where('user_id', $user->id)->get();
         $deposits = [];
 
         foreach ($donations as $donation) {
-            // Se a doação tiver um endereço de carteira válido
             if ($donation->wallet_address) {
                 $result = app(WalletController::class)->checkDeposits($donation->wallet_address);
-
                 if ($result['success'] && !empty($result['usdt_deposits'])) {
-                    // Adiciona os depósitos encontrados ao array principal
                     foreach ($result['usdt_deposits'] as $deposit) {
                         $deposits[] = $deposit;
                     }
@@ -52,9 +59,8 @@ class DonationController extends Controller
             }
         }
 
-        return Inertia::render('Donation/History', [
-            'donations' => $donations,
-            'deposits' => $deposits,
+        return response()->json([
+            'deposits' => $deposits
         ]);
     }
 
