@@ -43,57 +43,60 @@ const totalShishaBalance = computed(() => {
 onMounted(fetchShishaPrice);
 </script>
 
-
 <template>
     <AppLayout title="Donation History">
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+            <h2 class="font-semibold text-xl md:text-2xl text-gray-800 dark:text-gray-200 leading-tight">
                 Shisha Coin Balance: {{ totalShishaBalance }}
             </h2>
         </template>
 
-        <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="py-8 px-4 sm:px-6 lg:px-8 space-y-12">
+            <div class="max-w-7xl mx-auto w-full">
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg">
-                    <table class="border-collapse w-full">
-                        <thead>
-                            <tr>
-                                <th class="p-3 font-bold uppercase bg-gray-200 text-gray-600 border border-gray-300">
-                                    Amount (SHISHA)
-                                </th>
-                                <th class="p-3 font-bold uppercase bg-gray-200 text-gray-600 border border-gray-300">
-                                    Donation Amount (USD)
-                                </th>
-                                <th class="p-3 font-bold uppercase bg-gray-200 text-gray-600 border border-gray-300">
-                                    Date
-                                </th>
-                                <th class="p-3 font-bold uppercase bg-gray-200 text-gray-600 border border-gray-300">
-                                    Status
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="donation in donations" :key="donation.id" class="bg-white hover:bg-gray-100">
-                                <td class="p-3 text-gray-800 text-center border">{{ loading.value ? 'Loading...' : (donation.amount / shishaPrice).toFixed(2) }} SHISHA</td>
-                                <td class="p-3 text-gray-800 text-center border">
-                                    <!-- Exibe "Loading..." enquanto o preço não for carregado -->
-                                    {{ donation.amount }} USD
-                                </td>
-                                <td class="p-3 text-gray-800 text-center border">
-                                    {{ new Date(donation.created_at).toLocaleString() }}
-                                </td>
-                                <td class="p-3 text-gray-800 text-center border">
-                                    <span :class="{
-                                        'bg-green-400': donation.status === 'active',
-                                        'bg-yellow-400': donation.status === 'pending',
-                                        'bg-red-400': donation.status === 'deleted'
-                                    }" class="rounded py-1 px-3 text-xs font-bold">
-                                        {{ donation.status.charAt(0).toUpperCase() + donation.status.slice(1) }}
-                                    </span>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <h3 class="text-lg md:text-xl font-semibold p-4 text-gray-800 dark:text-gray-200">Donation History</h3>
+                    <div class="w-full overflow-x-auto">
+                        <table class="min-w-full text-sm md:text-base border-collapse">
+                            <thead>
+                                <tr>
+                                    <th class="p-3 font-bold uppercase bg-gray-200 text-gray-600 border text-left">
+                                        Amount (SHISHA)
+                                    </th>
+                                    <th class="p-3 font-bold uppercase bg-gray-200 text-gray-600 border text-left">
+                                        Donation Amount (USD)
+                                    </th>
+                                    <th class="p-3 font-bold uppercase bg-gray-200 text-gray-600 border text-left">
+                                        Date
+                                    </th>
+                                    <th class="p-3 font-bold uppercase bg-gray-200 text-gray-600 border text-left">
+                                        Status
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="donation in donations" :key="donation.id" class="bg-white hover:bg-gray-100">
+                                    <td class="p-3 text-gray-800 border whitespace-nowrap">
+                                        {{ loading.value ? 'Loading...' : (donation.amount / shishaPrice).toFixed(2) }} SHISHA
+                                    </td>
+                                    <td class="p-3 text-gray-800 border whitespace-nowrap">
+                                        ${{ donation.amount }}
+                                    </td>
+                                    <td class="p-3 text-gray-800 border whitespace-nowrap">
+                                        {{ new Date(donation.created_at).toLocaleString() }}
+                                    </td>
+                                    <td class="p-3 text-gray-800 border">
+                                        <span :class="{
+                                            'bg-green-400': donation.status === 'active',
+                                            'bg-yellow-400': donation.status === 'pending',
+                                            'bg-red-400': donation.status === 'deleted'
+                                        }" class="rounded py-1 px-3 text-xs md:text-sm text-dark font-bold inline-block">
+                                            {{ donation.status.charAt(0).toUpperCase() + donation.status.slice(1) }}
+                                        </span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>

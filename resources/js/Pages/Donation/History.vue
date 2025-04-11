@@ -10,75 +10,84 @@ defineProps({
 <template>
     <AppLayout title="Donation History">
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+            <h2 class="font-semibold text-xl md:text-2xl text-gray-800 dark:text-gray-200 leading-tight">
                 Donation History
             </h2>
         </template>
 
-        <div class="py-12 space-y-12">
+        <div class="py-8 px-4 sm:px-6 lg:px-8 space-y-12">
             <!-- Donations Table -->
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="max-w-7xl mx-auto w-full">
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg">
-                    <h3 class="text-lg font-semibold p-4 text-gray-800 dark:text-gray-200">Donations</h3>
-                    <table class="border-collapse w-full">
-                        <thead>
-                            <tr>
-                                <th class="p-3 font-bold uppercase bg-gray-200 text-gray-600 border">Amount</th>
-                                <th class="p-3 font-bold uppercase bg-gray-200 text-gray-600 border">Wallet Address</th>
-                                <th class="p-3 font-bold uppercase bg-gray-200 text-gray-600 border">Expired</th>
-                                <th class="p-3 font-bold uppercase bg-gray-200 text-gray-600 border">Donation Date</th>
-                                <th class="p-3 font-bold uppercase bg-gray-200 text-gray-600 border">Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="donation in donations" :key="donation.id" class="bg-white hover:bg-gray-100">
-                                <td class="p-3 text-gray-800 text-center border">${{ donation.amount }}</td>
-                                <td class="p-3 text-gray-800 text-center border">{{ donation.wallet_address }}</td>
-                                <td class="p-3 text-gray-800 text-center border">{{ donation.expires_at }}</td>
-                                <td class="p-3 text-gray-800 text-center border">{{ new Date(donation.created_at).toLocaleString() }}</td>
-                                <td class="p-3 text-gray-800 text-center border">
-                                    <span :class="{
-                                        'bg-green-400': donation.status === 'active',
-                                        'bg-yellow-400': donation.status === 'pending',
-                                        'bg-green-400': donation.status === 'completed'
-                                    }" class="rounded py-1 px-3 text-xs text-dark font-bold">
-                                        {{ donation.status.charAt(0).toUpperCase() + donation.status.slice(1) }}
-                                    </span>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <h3 class="text-lg md:text-xl font-semibold p-4 text-gray-800 dark:text-gray-200">Donations</h3>
+                    <div class="w-full overflow-x-auto">
+                        <table class="min-w-full text-sm md:text-base border-collapse">
+                            <thead>
+                                <tr>
+                                    <th class="p-3 font-bold uppercase bg-gray-200 text-gray-600 border text-left">Amount</th>
+                                    <th class="p-3 font-bold uppercase bg-gray-200 text-gray-600 border text-left">Wallet</th>
+                                    <th class="p-3 font-bold uppercase bg-gray-200 text-gray-600 border text-left">Expired</th>
+                                    <th class="p-3 font-bold uppercase bg-gray-200 text-gray-600 border text-left">Date</th>
+                                    <th class="p-3 font-bold uppercase bg-gray-200 text-gray-600 border text-left">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="donation in donations" :key="donation.id" class="bg-white hover:bg-gray-100">
+                                    <td class="p-3 text-gray-800 border whitespace-nowrap">${{ donation.amount }}</td>
+                                    <td class="p-3 text-gray-800 border break-all">{{ donation.wallet_address }}</td>
+                                    <td class="p-3 text-gray-800 border whitespace-nowrap">{{ donation.expires_at }}</td>
+                                    <td class="p-3 text-gray-800 border whitespace-nowrap">
+                                        {{ new Date(donation.created_at).toLocaleString() }}
+                                    </td>
+                                    <td class="p-3 text-gray-800 border">
+                                        <span
+                                            :class="{
+                                                'bg-green-400': donation.status === 'active' || donation.status === 'completed',
+                                                'bg-yellow-400': donation.status === 'pending'
+                                            }"
+                                            class="rounded py-1 px-3 text-xs md:text-sm text-dark font-bold inline-block"
+                                        >
+                                            {{ donation.status.charAt(0).toUpperCase() + donation.status.slice(1) }}
+                                        </span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
-            <!-- Deposits Table -->
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <!-- Deposits Table (comentado, mas também responsivo se quiser ativar depois) -->
+            <!--
+            <div class="max-w-7xl mx-auto w-full">
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg">
-                    <h3 class="text-lg font-semibold p-4 text-gray-800 dark:text-gray-200">Deposits</h3>
-                    <table class="border-collapse w-full">
-                        <thead>
-                            <tr>
-                                <th class="p-3 font-bold uppercase bg-gray-200 text-gray-600 border">From</th>
-                                <th class="p-3 font-bold uppercase bg-gray-200 text-gray-600 border">Amount</th>
-                                <th class="p-3 font-bold uppercase bg-gray-200 text-gray-600 border">Timestamp</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="deposit in deposits" :key="deposit.transaction_id"
-                                class="bg-white hover:bg-gray-100">
-                                <td class="p-3 text-gray-800 text-center border">{{ deposit.to }}</td>
-                                <td class="p-3 text-gray-800 text-center border">
-                                    {{ (deposit.value / Math.pow(10, deposit.token_info.decimals)).toFixed(2) }} {{
-                                    deposit.token_info.symbol }}
-                                </td>
-                                <td class="p-3 text-gray-800 text-center border">
-                                    {{ new Date(deposit.block_timestamp).toLocaleString() }}
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <h3 class="text-lg md:text-xl font-semibold p-4 text-gray-800 dark:text-gray-200">Deposits</h3>
+                    <div class="w-full overflow-x-auto">
+                        <table class="min-w-full text-sm md:text-base border-collapse">
+                            <thead>
+                                <tr>
+                                    <th class="p-3 font-bold uppercase bg-gray-200 text-gray-600 border text-left">From</th>
+                                    <th class="p-3 font-bold uppercase bg-gray-200 text-gray-600 border text-left">Amount</th>
+                                    <th class="p-3 font-bold uppercase bg-gray-200 text-gray-600 border text-left">Timestamp</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="deposit in deposits" :key="deposit.transaction_id" class="bg-white hover:bg-gray-100">
+                                    <td class="p-3 text-gray-800 border break-all">{{ deposit.to }}</td>
+                                    <td class="p-3 text-gray-800 border whitespace-nowrap">
+                                        {{ (deposit.value / Math.pow(10, deposit.token_info.decimals)).toFixed(2) }}
+                                        {{ deposit.token_info.symbol }}
+                                    </td>
+                                    <td class="p-3 text-gray-800 border whitespace-nowrap">
+                                        {{ new Date(deposit.block_timestamp).toLocaleString() }}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
+            -->
 
         </div>
     </AppLayout>
