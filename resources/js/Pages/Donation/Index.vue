@@ -1,6 +1,6 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
-import { defineProps, ref } from 'vue';
+import { defineProps, ref, watch, onBeforeUnmount } from 'vue';
 import axios from 'axios';
 
 const props = defineProps({
@@ -12,14 +12,19 @@ const selectedAmount = ref(null);
 const amounts = [100, 500, 1000, 2000];
 const showModal = ref(false);
 const donationPending = ref(null);
+const donationCompleted = ref(false);
 const copied = ref(false);
+let pollingInterval = null;
 
 const openModal = () => showModal.value = true;
+
 const closeModal = () => {
     showModal.value = false;
     donationPending.value = null;
+    donationCompleted.value = false;
     selectedAmount.value = null;
     copied.value = false;
+    clearInterval(pollingInterval);
 };
 
 const donate = async () => {
@@ -30,6 +35,9 @@ const donate = async () => {
     });
 
     donationPending.value = response.data.donation;
+
+    // Iniciar verificação periódica
+    startPollingDonation();
 };
 
 const copyToClipboard = () => {
@@ -37,11 +45,31 @@ const copyToClipboard = () => {
     copied.value = true;
     setTimeout(() => copied.value = false, 2000);
 };
+
+const checkDonationStatus = async () => {
+    if (!donationPending.value) return;
+
+    const response = await axios.get(`/api/donations/${donationPending.value.id}`);
+    if (response.data.donation.status === 'completed') {
+        donationCompleted.value = true;
+        clearInterval(pollingInterval);
+    }
+};
+
+const startPollingDonation = () => {
+    clearInterval(pollingInterval);
+    pollingInterval = setInterval(checkDonationStatus, 5000); // a cada 5 segundos
+};
+
+onBeforeUnmount(() => {
+    clearInterval(pollingInterval);
+});
 </script>
 
 <template>
-    <AppLayout title="Donations">
-        <div class="p-6 space-y-10 max-w-3xl mx-auto text-center">
+<AppLayout title="Donations">
+    <div class="min-h-screen flex items-center justify-center p-6">
+        <div class=" max-w-3xl w-full text-center">
 
             <!-- Intro -->
             <div>
@@ -60,11 +88,12 @@ const copyToClipboard = () => {
             </div>
 
             <!-- Modal Overlay -->
+            <!-- Modal Overlay -->
             <transition name="fade">
                 <div v-if="showModal"
                     class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center px-4">
                     <!-- Modal Content -->
-                    <div class="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl relative transition-all">
+                    <div class="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl relative transition-all max-h-[90vh] overflow-y-auto">
                         <!-- Close Button -->
                         <button class="absolute top-3 right-3 text-gray-400 hover:text-black text-2xl" @click="closeModal">
                             &times;
@@ -95,11 +124,10 @@ const copyToClipboard = () => {
                         </div>
 
                         <!-- Step 2: Payment Instructions -->
-                        <div v-else>
+                        <div v-else-if="!donationCompleted">
                             <h2 class="text-xl font-semibold text-center text-gray-800 mb-3">Awaiting Payment</h2>
                             <p class="text-gray-600 text-sm text-center mb-3">
-                                Please send <strong>{{ donationPending.amount }} USDT</strong>
-                                <br />
+                                Please send <strong>{{ donationPending.amount }} USDT</strong><br />
                                 <span class="text-xs text-gray-500">(TRC20 - Tron Network)</span>
                             </p>
 
@@ -119,9 +147,27 @@ const copyToClipboard = () => {
                                 The donation will be confirmed automatically after we detect the payment.
                             </p>
                         </div>
+
+                        <!-- Step 3: Completed -->
+                        <div v-else>
+                            <h2 class="text-xl font-bold text-green-600 text-center mb-4">✅ Donation Completed</h2>
+                            <p class="text-center text-gray-700">
+                                Thank you for your support!<br>
+                                We have received your <strong>{{ donationPending.amount }} USDT</strong> donation.
+                            </p>
+                            <div class="mt-6 flex justify-center">
+                                <button @click="closeModal"
+                                    class="bg-green-600 hover:bg-green-500 text-white px-6 py-2 rounded-xl shadow-md transition">
+                                    Close
+                                </button>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </transition>
+
         </div>
-    </AppLayout>
+    </div>
+</AppLayout>
 </template>

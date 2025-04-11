@@ -111,5 +111,20 @@ class DonationController extends Controller
         return response()->json(['donation' => $donation]);
     }
 
+    public function show($id)
+    {
+        $donation = Donation::with('user')->findOrFail($id);
+
+        // Atualiza status se necessário (checando se houve depósito)
+        if ($donation->status === 'pending') {
+            $result = app(WalletController::class)->tryConfirmPendingDonation($donation->wallet, $donation);
+        }
+
+        // Recarrega a doação atualizada
+        $donation->refresh();
+
+        return response()->json(['donation' => $donation]);
+    }
+
 
 }
