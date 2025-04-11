@@ -15,11 +15,11 @@ defineProps({
             </h2>
         </template>
 
-        <div class="py-8 px-4 sm:px-6 lg:px-8 space-y-12">
-            <!-- Donations Table -->
-            <div class="max-w-7xl mx-auto w-full">
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg">
-                    <h3 class="text-lg md:text-xl font-semibold p-4 text-gray-800 dark:text-gray-200">Donations</h3>
+        <div class="py-12">
+            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-12">
+                <!-- Donations Table -->
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg p-6">
+                    <h3 class="text-lg md:text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">Donations</h3>
                     <div class="w-full overflow-x-auto">
                         <table class="min-w-full text-sm md:text-base border-collapse">
                             <thead>
@@ -55,13 +55,11 @@ defineProps({
                         </table>
                     </div>
                 </div>
-            </div>
 
-            <!-- Deposits Table (comentado, mas também responsivo se quiser ativar depois) -->
-            <!--
-            <div class="max-w-7xl mx-auto w-full">
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg">
-                    <h3 class="text-lg md:text-xl font-semibold p-4 text-gray-800 dark:text-gray-200">Deposits</h3>
+                <!-- Deposits Table (comentado, mas atualizado com o novo layout também) -->
+                <!--
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg p-6">
+                    <h3 class="text-lg md:text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">Deposits</h3>
                     <div class="w-full overflow-x-auto">
                         <table class="min-w-full text-sm md:text-base border-collapse">
                             <thead>
@@ -86,9 +84,8 @@ defineProps({
                         </table>
                     </div>
                 </div>
+                -->
             </div>
-            -->
-
         </div>
     </AppLayout>
 </template>
