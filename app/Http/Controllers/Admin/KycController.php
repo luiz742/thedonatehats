@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Kyc;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class KycController extends Controller
@@ -17,7 +18,8 @@ class KycController extends Controller
     public function show($id)
     {
         $kyc = Kyc::with('user')->findOrFail($id);
-        return inertia('Admin/KYC/Show', ['kyc' => $kyc]); // ou view()
+        $user = User::with('kyc')->findOrFail($id);
+        return inertia('Admin/KYC/Show', ['kyc' => $kyc, 'user' => $user]); // ou view()
     }
 
     public function approve($id)

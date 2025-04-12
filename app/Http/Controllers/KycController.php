@@ -11,6 +11,7 @@ class KycController extends Controller
     public function index()
     {
         $kyc = Kyc::where('user_id', auth()->id())->first();
+
         return Inertia::render('KYC/Form', ['kyc' => $kyc]);
     }
 
