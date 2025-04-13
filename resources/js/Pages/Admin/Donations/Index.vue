@@ -27,7 +27,7 @@ const headers = ['User', 'Amount', 'Status']
   <AppLayout title="Donations">
     <template #header>
       <h2 class="font-semibold text-xl md:text-2xl text-gray-800 dark:text-gray-200 leading-tight">
-        Donations List
+        Donations list
       </h2>
     </template>
 
