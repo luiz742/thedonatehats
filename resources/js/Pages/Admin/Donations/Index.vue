@@ -3,36 +3,38 @@ import Table from '@/Components/Table.vue'
 import AppLayout from '@/Layouts/AppLayout.vue'
 
 const props = defineProps<{
-  kycs: Array<{
+  donations: Array<{
     id: number,
     user: {
       name: string | null
     } | null,
-    status: 'pending' | 'approved' | 'rejected'
+    amount: number,
+    status: string
   }>
 }>()
 
 // Transformando os dados em formato achatado
-const formattedKycs = props.kycs.map(kyc => ({
-  user: kyc.user?.name ?? '—',
-  status: kyc.status
+const formattedDonations = props.donations.map(donation => ({
+  user: donation.user?.name ?? '—',
+  amount: donation.amount,
+  status: donation.status
 }))
 
-const headers = ['User', 'Status', 'Actions']
+const headers = ['User', 'Amount', 'Status']
 </script>
 
 <template>
-  <AppLayout title="KYC Management">
+  <AppLayout title="Donations">
     <template #header>
       <h2 class="font-semibold text-xl md:text-2xl text-gray-800 dark:text-gray-200 leading-tight">
-        KYC List
+        Donations List
       </h2>
     </template>
 
     <div class="py-12">
       <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
         <Table
-          :data="formattedKycs"
+          :data="formattedDonations"
           :headers="headers"
           :filterByName="true"
         />

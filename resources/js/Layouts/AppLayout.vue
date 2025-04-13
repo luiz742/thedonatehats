@@ -74,6 +74,11 @@ const logout = () => {
                                     Manage Users
                                 </NavLink>
 
+                                <NavLink v-if="$page.props.auth.user && $page.props.auth.user.is_admin"
+                                    :href="route('admin.donations.index')" :active="route().current('dashboard')">
+                                    Donations
+                                </NavLink>
+
                                 <div class="flex items-center">
                                     <Link :href="route('donations.index')"
                                         class="px-4 py-1 rounded-md text-sm font-semibold bg-green-500 text-white dark:text-white hover:bg-green-400 transition-all duration-300">

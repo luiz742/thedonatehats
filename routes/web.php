@@ -10,6 +10,7 @@ use App\Http\Middleware\AdminMiddleware;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\WalletController;
+use App\Http\Controllers\Admin\DonationController as AdminDonationController;
 
 Route::get('/test-check/{address}', [WalletController::class, 'checkDeposits']);
 
@@ -34,6 +35,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/kyc/{id}', [\App\Http\Controllers\Admin\KycController::class, 'show'])->name('admin.kycs.show');
     Route::post('/kyc/{id}/approve', [\App\Http\Controllers\Admin\KycController::class, 'approve'])->name('admin.kycs.approve');
     Route::post('/kyc/{id}/reject', [\App\Http\Controllers\Admin\KycController::class, 'reject'])->name('admin.kycs.reject');
+
+    Route::resource('donations', AdminDonationController::class)->only(['index', 'show', 'destroy']);
 });
 
 
