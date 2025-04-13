@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import Table from '@/Components/Table.vue'
 import AppLayout from '@/Layouts/AppLayout.vue'
+import { router } from '@inertiajs/vue3'
 
 const props = defineProps<{
   kycs: Array<{
@@ -12,13 +13,19 @@ const props = defineProps<{
   }>
 }>()
 
-// Transformando os dados em formato achatado
+// Transformando os dados em formato achatado com ID
 const formattedKycs = props.kycs.map(kyc => ({
+  id: kyc.id,
   user: kyc.user?.name ?? '—',
   status: kyc.status
 }))
 
 const headers = ['User', 'Status', 'Actions']
+
+// Redirecionamento ao editar
+const handleEdit = (kyc: { id: number }) => {
+  router.visit(`/admin/kyc/${kyc.id}/`)
+}
 </script>
 
 <template>
@@ -35,6 +42,8 @@ const headers = ['User', 'Status', 'Actions']
           :data="formattedKycs"
           :headers="headers"
           :filterByName="true"
+          :showEditAction="true"
+          @edit="handleEdit"
         />
       </div>
     </div>
