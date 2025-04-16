@@ -1,6 +1,6 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
-import { defineProps, ref } from "vue";
+import { defineProps, ref, computed } from "vue";
 import { router } from "@inertiajs/vue3";
 
 const props = defineProps({
@@ -42,6 +42,13 @@ const toggleAdmin = async () => {
         isLoading.value = false;
     }
 };
+
+const totalShisha = computed(() => {
+    return (props.user.donations || [])
+        .filter(d => d.status === 'completed' && d.shisha_price)
+        .reduce((sum, d) => sum + d.amount / d.shisha_price, 0)
+        .toFixed(2);
+});
 
 const formatImageUrl = (imagePath) => {
     if (!imagePath) return '';
@@ -90,6 +97,9 @@ const formatImageUrl = (imagePath) => {
                 <!-- Donations Table -->
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg p-6">
                     <h3 class="text-lg md:text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">Donations</h3>
+                    <p class="text-gray-800 dark:text-gray-200 text-base md:text-lg font-medium mb-2">
+                        💰 <strong>Total SHISHA Balance:</strong> {{ totalShisha }} SHISHA
+                    </p>
                     <div class="w-full overflow-x-auto">
                         <table class="min-w-full text-sm md:text-base border-collapse">
                             <thead>
