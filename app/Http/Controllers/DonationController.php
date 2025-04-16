@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Kyc;
 use Illuminate\Http\Request;
 use App\Models\Donation;
 use App\Models\Wallet;
@@ -67,8 +68,13 @@ class DonationController extends Controller
 
     public function balance()
     {
+        $user = Auth::user();
+
+        $kyc = Kyc::with('user')->where('user_id', $user->id)->first();
+
         return Inertia::render('Donation/Balance', [
-            'donations' => Donation::with('user')->where('user_id', auth()->id())->latest()->get()
+            'donations' => Donation::with('user')->where('user_id', auth()->id())->latest()->get(),
+            'kyc' => $kyc,
         ]);
     }
 

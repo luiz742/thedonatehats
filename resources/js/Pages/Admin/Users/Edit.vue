@@ -65,7 +65,8 @@ const formatImageUrl = (imagePath) => {
                             {{ isAdmin ? '✅ Yes' : '❌ No' }}
                         </span>
                     </p>
-                    <button class="px-5 py-2.5 bg-indigo-600 text-white font-medium rounded-xl mt-2 hover:bg-indigo-700 transition-all duration-200"
+                    <button
+                        class="px-5 py-2.5 bg-indigo-600 text-white font-medium rounded-xl mt-2 hover:bg-indigo-700 transition-all duration-200"
                         :disabled="isLoading" @click="toggleAdmin">
                         {{ isAdmin ? 'Remove Admin' : 'Make Admin' }}
                     </button>
@@ -93,7 +94,8 @@ const formatImageUrl = (imagePath) => {
                                     <th class="p-3 font-bold uppercase bg-gray-200 text-gray-600 border text-left">
                                         Wallet</th>
                                     <th class="p-3 font-bold uppercase bg-gray-200 text-gray-600 border text-left">
-                                        Expired</th>
+                                        SHISHA
+                                    </th>
                                     <th class="p-3 font-bold uppercase bg-gray-200 text-gray-600 border text-left">Date
                                     </th>
                                     <th class="p-3 font-bold uppercase bg-gray-200 text-gray-600 border text-left">
@@ -105,7 +107,11 @@ const formatImageUrl = (imagePath) => {
                                     class="bg-white hover:bg-gray-100">
                                     <td class="p-3 text-gray-800 border whitespace-nowrap">${{ donation.amount }}</td>
                                     <td class="p-3 text-gray-800 border break-all">{{ donation.wallet_address }}</td>
-                                    <td class="p-3 text-gray-800 border whitespace-nowrap">{{ donation.expires_at }}
+                                    <td class="p-3 text-gray-800 border whitespace-nowrap">
+                                        <span v-if="donation.shisha_price & donation.status == 'completed'">
+                                            {{ (donation.amount / donation.shisha_price).toFixed(2) }} SHISHA
+                                        </span>
+                                        <span v-else class="text-gray-400 italic">N/A</span>
                                     </td>
                                     <td class="p-3 text-gray-800 border whitespace-nowrap">
                                         {{ new Date(donation.created_at).toLocaleString() }}
