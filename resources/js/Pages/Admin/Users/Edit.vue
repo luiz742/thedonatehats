@@ -24,12 +24,17 @@ const toggleAdmin = async () => {
     isLoading.value = true;
     try {
         await router.patch(route("admin.users.update", props.user.id), {
+            name: props.user.name,
+            email: props.user.email,
             is_admin: !isAdmin.value,
         }, {
             preserveScroll: true,
-            onSuccess: (page) => {
-                isAdmin.value = page.props.user.is_admin;
+            onSuccess: () => {
+                isAdmin.value = !isAdmin.value;
             },
+            onError: (errors) => {
+                console.error('Erro na atualização do admin:', errors);
+            }
         });
     } catch (error) {
         console.error("Erro ao atualizar admin:", error);

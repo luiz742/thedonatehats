@@ -55,10 +55,10 @@ class UserController extends Controller
             'is_admin' => 'required|boolean'
         ]);
 
-        dd($request->all());
+        // dd($request->all());
 
         $user->update($request->all());
 
-        return redirect()->route('admin.users.index')->with('success', 'Usuário atualizado com sucesso!');
+        return redirect()->back()->banner('User has been updated!');
     }
 }
