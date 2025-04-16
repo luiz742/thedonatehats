@@ -24,6 +24,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/wallet/generate', [WalletController::class, 'generate'])->name('wallet.generate');
 });
 
+Route::post('/wallets/{wallet}/withdraw', [WalletController::class, 'withdraw'])->name('wallets.withdraw');
+
 
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/users', [UserController::class, 'index'])->name('users.index');

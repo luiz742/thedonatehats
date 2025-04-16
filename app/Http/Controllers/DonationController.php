@@ -8,6 +8,7 @@ use App\Models\Wallet;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Http;
 
 class DonationController extends Controller
 {
@@ -78,7 +79,18 @@ class DonationController extends Controller
             'amount' => 'required|in:100,500,1000,2000',
         ]);
 
-        // Gera uma nova carteira
+        // Busca o preço atual da Shisha Coin
+        $response = Http::get('https://api.dex-trade.com/v1/public/ticker?pair=SHISHAUSDT');
+
+        $shishaPrice = null;
+
+        if ($response->successful() && isset($response['data']['last'])) {
+            $shishaPrice = $response['data']['last'];
+        } else {
+            return response()->json(['error' => 'Erro ao buscar preço do Shisha.'], 500);
+        }
+
+        // Gera carteira
         $pathToScript = base_path('tronweb/generate_wallet.js');
         $command = "node " . escapeshellarg($pathToScript);
         $output = shell_exec($command);
@@ -93,7 +105,6 @@ class DonationController extends Controller
             return response()->json(['error' => 'Carteira inválida retornada.'], 500);
         }
 
-        // Cria a carteira no banco
         $wallet = Wallet::create([
             'user_id' => Auth::id(),
             'address' => $walletData->address,
@@ -101,21 +112,21 @@ class DonationController extends Controller
             'public_key' => $walletData->publicKey,
         ]);
 
-        // Cria a doação vinculada à carteira recém-criada
         $donation = Donation::create([
             'user_id' => auth()->id(),
             'wallet_address' => $wallet->address,
             'wallet_id' => $wallet->id,
             'amount' => $request->amount,
+            'shisha_price' => $shishaPrice,
             'status' => 'pending',
             'expires_at' => now()->addMinutes(15),
         ]);
 
-        // Checa se tem algum depósito já batendo com essa carteira
         app(WalletController::class)->tryConfirmPendingDonation($wallet, $donation);
 
         return response()->json(['donation' => $donation]);
     }
+
 
     public function show($id)
     {

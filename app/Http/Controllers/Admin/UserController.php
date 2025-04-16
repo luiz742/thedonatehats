@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Donation;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -13,6 +14,7 @@ class UserController extends Controller
     public function index(): Response
     {
         $users = User::select('id', 'name', 'email', 'is_admin')->get();
+        $donations = Donation::get();
 
         return Inertia::render('Admin/Users/Index', [
             'users' => $users
@@ -21,7 +23,7 @@ class UserController extends Controller
 
     public function edit(User $user): Response
     {
-        $user = User::with('kyc')->findOrFail($user->id);
+        $user = User::with('kyc', 'donations')->findOrFail($user->id);
         return Inertia::render('Admin/Users/Edit', [
             'user' => $user
         ]);

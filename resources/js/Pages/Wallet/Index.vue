@@ -1,29 +1,40 @@
+<script setup>
+import AppLayout from '@/Layouts/AppLayout.vue'
+defineProps({
+    wallets: Array
+})
+</script>
+
 <template>
-    <div class="max-w-2xl mx-auto mt-10">
-      <h1 class="text-2xl font-bold mb-4">Minha Carteira TRX</h1>
+    <AppLayout title="Minhas Carteiras">
+        <template #header>
+            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+                Carteiras e Saldos
+            </h2>
+        </template>
 
-      <div v-if="wallet">
-        <p><strong>Endereço:</strong> {{ wallet.address }}</p>
-        <p><strong>Chave Pública:</strong> {{ wallet.public_key }}</p>
-      </div>
-      <div v-else>
-        <form @submit.prevent="generateWallet">
-          <button
-            type="submit"
-            class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-          >
-            Gerar Carteira
-          </button>
-        </form>
-      </div>
-    </div>
-  </template>
-
-  <script setup>
-  import { router } from '@inertiajs/vue3'
-  defineProps({ wallet: Object })
-
-  function generateWallet() {
-    router.post('/wallet/generate')
-  }
-  </script>
+        <div class="py-12">
+            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+                <div v-for="wallet in wallets" :key="wallet.id"
+                    class="bg-white dark:bg-gray-800 shadow sm:rounded-lg p-6 transition-colors duration-300">
+                    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+                        <div>
+                            <p class="text-lg font-bold text-gray-800 dark:text-gray-100">
+                                Carteira: {{ wallet.address }}
+                            </p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">
+                                Chave Pública: {{ wallet.public_key }}
+                            </p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Saldo USDT</p>
+                            <p class="text-2xl font-semibold text-green-600 dark:text-green-400">
+                                {{ wallet.balance?.toFixed(2) }} USDT
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </AppLayout>
+</template>

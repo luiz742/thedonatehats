@@ -15,7 +15,8 @@ class Donation extends Model
         'status',
         'expires_at',
         'wallet_id',
-        'wallet_address'
+        'wallet_address',
+        'shisha_price'
     ];
 
     public function user()

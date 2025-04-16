@@ -12,4 +12,10 @@ class Wallet extends Model
         'private_key',
         'public_key',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
 }

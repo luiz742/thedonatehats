@@ -5,15 +5,48 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Crypt;
+// Duplicate import removed
 use StephenHill\Base58;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use App\Models\Wallet;
 use App\Models\Donation;
+use Illuminate\Support\Facades\Crypt;
 
 class WalletController extends Controller
 {
     // WalletController.php
+    public function withdraw(Request $request, Wallet $wallet)
+    {
+        $request->validate([
+            'to_address' => 'required|string',
+            'amount' => 'required|numeric|min:0.000001',
+        ]);
+
+        $privateKey = Crypt::decryptString($wallet->private_key);
+
+        $scriptPath = base_path('tronweb/send_usdt.js');
+        $command = sprintf(
+            'node %s %s %s %s',
+            escapeshellarg($scriptPath),
+            escapeshellarg($privateKey),
+            escapeshellarg($request->to_address),
+            escapeshellarg($request->amount)
+        );
+
+        $output = shell_exec($command);
+        $response = json_decode($output, true);
+
+        if (!$response || !isset($response['success'])) {
+            return back()->withErrors(['Erro ao executar o script de saque.']);
+        }
+
+        if (!$response['success']) {
+            return back()->withErrors(['Erro no saque: ' . $response['error']]);
+        }
+
+        return back()->with('success', 'Saque realizado com sucesso. TX: ' . $response['tx_id']);
+    }
 
     public function tryConfirmPendingDonation(Wallet $wallet, Donation $donation)
     {
@@ -180,18 +213,30 @@ class WalletController extends Controller
         })->values();
     }
 
-    // public function index()
-    // {
-    //     $wallet = Wallet::where('user_id', Auth::id())->first();
-    //     $incomingTransactions = [];
+    public function index()
+    {
+        $wallets = Wallet::with('user')->get();
 
-    //     if ($wallet) {
-    //         $incomingTransactions = $this->getIncomingDeposits($wallet->address);
-    //     }
+        $walletsWithBalance = $wallets->map(function ($wallet) {
+            $result = $this->checkDeposits($wallet->address);
 
-    //     return inertia('Wallet/Index', [
-    //         'wallet' => $wallet,
-    //         'deposits' => $incomingTransactions,
-    //     ]);
-    // }
+            $balance = 0;
+
+            if ($result['success']) {
+                $balance = collect($result['usdt_deposits'])->sum(function ($tx) {
+                    return isset($tx['value']) ? $tx['value'] / pow(10, 6) : 0;
+                });
+            }
+
+            $wallet->balance = $balance;
+            return $wallet;
+        })->filter(function ($wallet) {
+            return $wallet->balance > 0;
+        })->values(); // <- Importante para resetar os índices
+
+        return inertia('Wallet/Index', [
+            'wallets' => $walletsWithBalance,
+        ]);
+    }
+
 }
