@@ -23,7 +23,7 @@ defineProps({
 
         <!-- Menu -->
         <div class="flex space-x-6">
-            <Link v-if="canLogin" :href="route($page.props.auth.user ? 'dashboard' : 'login')"
+            <Link v-if="canLogin" :href="route($page.props.auth.user ? 'kyc.index' : 'login')"
                 class="bg-white text-black font-semibold px-5 py-2 rounded hover:bg-gray-200 transition">
             {{ $page.props.auth.user ? 'Dashboard' : 'Login' }}
             </Link>
