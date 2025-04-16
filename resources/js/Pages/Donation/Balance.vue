@@ -36,9 +36,9 @@ const totalShishaBalance = computed(() => {
             <h2 class="font-semibold text-xl md:text-2xl text-gray-800 dark:text-gray-200 leading-tight">
                 Shisha Coin Balance: {{ totalShishaBalance }}
             </h2>
-            <div v-if="kyc && kyc.status != 'approved'" class="text-red-500">
+            <!-- <div v-if="kyc && kyc.status != 'approved'" class="text-red-500"> -->
                 <h4 style="color: yellow">SHISHA withdrawal request is subject to KYC approval.</h4>
-            </div>
+            <!-- </div> -->
             <div v-if="kyc && kyc.status === 'approved'">
                 <button
                     v-if="totalShishaBalance && totalShishaBalance > 0"

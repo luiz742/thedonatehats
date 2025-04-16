@@ -24,14 +24,14 @@ const form = useForm({
 });
 
 const kycStatus = computed(() => {
-    const status = props.kyc?.status || 'not_verified';
+    const status = props.kyc?.status || 'unverified';
     const statusMap = {
         approved: { label: 'Approved', color: 'bg-green-500' },
         pending: { label: 'Pending', color: 'bg-yellow-500' },
         rejected: { label: 'Rejected', color: 'bg-red-500' },
-        not_verified: { label: 'Not Verified', color: 'bg-gray-500' }
+        unverified: { label: 'Unverified', color: 'bg-gray-500' }
     };
-    return statusMap[status] || statusMap.not_verified;
+    return statusMap[status] || statusMap.unverified;
 });
 
 const updateFile = (event, field) => {
@@ -41,6 +41,17 @@ const updateFile = (event, field) => {
     }
 };
 
+const getKycLabel = (status) => {
+    const statusMap = {
+        pending: 'Under Review',
+        approved: 'Verified',
+        rejected: 'Rejected',
+        unverified: 'Unverified'
+    };
+
+    return status ? (statusMap[status] || 'Unverified') : 'Unverified';
+};
+
 const submit = () => {
     form.post("/kyc", {
         onSuccess() {
@@ -48,6 +59,8 @@ const submit = () => {
         },
     });
 };
+
+// ENUM('pending', 'approved', 'rejected', 'unverified')
 
 const resubmitKYC = () => {
     form.post('/kyc/resubmit', {
@@ -73,7 +86,9 @@ const resubmitKYC = () => {
                 <div class="flex items-center gap-2">
                     <span class="font-semibold dark:text-white">Status:</span>
                     <span class="px-3 py-1 text-white text-sm rounded-lg" :class="kycStatus.color">
-                        {{ kycStatus.label }}
+                        <p class="text-gray-800 dark:text-gray-300">
+                            <strong>{{ getKycLabel(props.kyc?.status) }}</strong>
+                        </p>
                     </span>
                 </div>
             </div>

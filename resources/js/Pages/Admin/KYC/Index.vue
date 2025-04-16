@@ -9,16 +9,24 @@ const props = defineProps<{
     user: {
       name: string | null
     } | null,
-    status: 'pending' | 'approved' | 'rejected'
+    status: 'pending' | 'approved' | 'rejected' | 'unverified'
   }>
 }>()
 
-// Transformando os dados em formato achatado com ID
+
+const statusLabelMap: Record<string, string> = {
+  pending: 'Pending',
+  approved: 'Approved',
+  rejected: 'Rejected',
+  unverified: 'Unverified'
+}
+
 const formattedKycs = props.kycs.map(kyc => ({
   id: kyc.id,
   user: kyc.user?.name ?? '—',
-  status: kyc.status
+  status: statusLabelMap[kyc.status] ?? 'Unknown'
 }))
+
 
 const headers = ['User', 'Status', 'Actions']
 

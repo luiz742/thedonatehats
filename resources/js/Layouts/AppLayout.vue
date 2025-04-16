@@ -51,7 +51,7 @@ const logout = () => {
                             <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                                 <NavLink v-if="$page.props.auth.user && !$page.props.auth.user.is_admin"
                                     :href="route('kyc.index')" :active="route().current('dashboard')">
-                                    KYC
+                                    Profile
                                 </NavLink>
 
                                 <NavLink v-if="$page.props.auth.user && !$page.props.auth.user.is_admin"
@@ -71,7 +71,7 @@ const logout = () => {
 
                                 <NavLink v-if="$page.props.auth.user && $page.props.auth.user.is_admin"
                                     :href="route('admin.users.index')" :active="route().current('dashboard')">
-                                    Manage Users
+                                    Users
                                 </NavLink>
 
                                 <NavLink v-if="$page.props.auth.user && $page.props.auth.user.is_admin"
@@ -79,7 +79,12 @@ const logout = () => {
                                     Donations
                                 </NavLink>
 
-                                <div class="flex items-center">
+                                <NavLink v-if="$page.props.auth.user && $page.props.auth.user.is_admin"
+                                    :href="route('admin.donations.index')" :active="route().current('dashboard')">
+                                    Withdraw Request
+                                </NavLink>
+
+                                <div v-if="$page.props.auth.user && $page.props.auth.user.is_admin != true" class="flex items-center">
                                     <Link :href="route('donations.index')"
                                         class="px-4 py-1 rounded-md text-sm font-semibold bg-green-500 text-white dark:text-white hover:bg-green-400 transition-all duration-300">
                                     Donate Now
@@ -267,7 +272,7 @@ const logout = () => {
 
                     <ResponsiveNavLink v-if="$page.props.auth.user && $page.props.auth.user.is_admin"
                         :href="route('admin.users.index')" :active="route().current('admin.users.index')">
-                        Manage Users
+                        Users
                     </ResponsiveNavLink>
 
                     <div class="flex items-center px-4">

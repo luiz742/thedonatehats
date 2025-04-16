@@ -26,6 +26,18 @@ const formatImageUrl = (path) => {
     if (!path) return '';
     return path.startsWith('/storage/') ? path : `/storage/${path}`;
 };
+
+const getKycLabel = (status) => {
+    const statusMap = {
+        pending: 'Under Review',
+        approved: 'Verified',
+        rejected: 'Rejected',
+        expired: 'Expired'
+    };
+
+    return status ? (statusMap[status] || 'Unverified') : 'Unverified';
+};
+
 </script>
 
 <template>
@@ -44,9 +56,9 @@ const formatImageUrl = (path) => {
                     <div v-if="kyc">
                         <p class="text-gray-700 dark:text-gray-300"><strong>Full Name:</strong> {{ kyc.full_name }}</p>
                         <p class="text-gray-700 dark:text-gray-300"><strong>Date of Birth:</strong> {{ kyc.date_of_birth
-                            }}</p>
+                        }}</p>
                         <p class="text-gray-700 dark:text-gray-300"><strong>Document Type:</strong> {{ kyc.document_type
-                            }}</p>
+                        }}</p>
                         <p class="text-gray-700 dark:text-gray-300"><strong>Document Number:</strong> {{
                             kyc.document_number }}
                         </p>
@@ -56,7 +68,7 @@ const formatImageUrl = (path) => {
                                 'text-green-500': kycStatus === 'approved',
                                 'text-red-500': kycStatus === 'rejected'
                             }">
-                                {{ kycStatus }}
+                                {{ getKycLabel(kycStatus) }}
                             </span>
                         </p>
 

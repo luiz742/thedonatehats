@@ -13,6 +13,17 @@ const kycStatus = ref(props.user.kyc?.status || 'pending');
 const isAdmin = ref(props.user.is_admin);
 const showKycModal = ref(false);
 
+const getKycLabel = (status) => {
+    const statusMap = {
+        pending: 'Under Review',
+        approved: 'Verified',
+        rejected: 'Rejected',
+        expired: 'Expired'
+    };
+
+    return status ? (statusMap[status] || 'Unverified') : 'Unverified';
+};
+
 const updateKycStatus = async (status) => {
     isLoading.value = true;
     await router.patch(route("admin.users.kyc.update", props.user.id), { status });
@@ -77,6 +88,8 @@ const formatImageUrl = (imagePath) => {
                             {{ isAdmin ? '✅ Yes' : '❌ No' }}
                         </span>
                     </p>
+                    <p class="text-gray-800 dark:text-gray-300">KYC Status: <strong>{{ getKycLabel(props.kyc?.status)
+                            }}</strong></p>
                     <button
                         class="px-5 py-2.5 bg-indigo-600 text-white font-medium rounded-xl mt-2 hover:bg-indigo-700 transition-all duration-200"
                         :disabled="isLoading" @click="toggleAdmin">
@@ -105,7 +118,7 @@ const formatImageUrl = (imagePath) => {
                             <thead>
                                 <tr>
                                     <th class="p-3 font-bold uppercase bg-gray-200 text-gray-600 border text-left">
-                                        Amount</th>
+                                        Amount (USDT TRC20)</th>
                                     <th class="p-3 font-bold uppercase bg-gray-200 text-gray-600 border text-left">
                                         Wallet</th>
                                     <th class="p-3 font-bold uppercase bg-gray-200 text-gray-600 border text-left">
@@ -120,7 +133,7 @@ const formatImageUrl = (imagePath) => {
                             <tbody>
                                 <tr v-for="donation in user.donations" :key="donation.id"
                                     class="bg-white hover:bg-gray-100">
-                                    <td class="p-3 text-gray-800 border whitespace-nowrap">${{ donation.amount }}</td>
+                                    <td class="p-3 text-gray-800 border whitespace-nowrap">{{ donation.amount }}</td>
                                     <td class="p-3 text-gray-800 border break-all">{{ donation.wallet_address }}</td>
                                     <td class="p-3 text-gray-800 border whitespace-nowrap">
                                         <span v-if="donation.shisha_price & donation.status == 'completed'">
@@ -171,13 +184,7 @@ const formatImageUrl = (imagePath) => {
                         user.kyc.document_number }}
                     </p>
                     <p class="text-gray-700 dark:text-gray-300"><strong>Status:</strong>
-                        <span :class="{
-                            'text-yellow-500 font-semibold': kycStatus === 'pending',
-                            'text-green-500 font-semibold': kycStatus === 'approved',
-                            'text-red-500 font-semibold': kycStatus === 'rejected'
-                        }">
-                            {{ kycStatus.charAt(0).toUpperCase() + kycStatus.slice(1) }}
-                        </span>
+                        <strong>{{ getKycLabel(props.kyc?.status) }}</strong>
                     </p>
                 </div>
 
