@@ -39,4 +39,9 @@ class HandleInertiaRequests extends Middleware
             //
         ]);
     }
+
+    public function onInvalidSession(Request $request)
+    {
+        return redirect()->route('login');
+    }
 }
