@@ -41,6 +41,7 @@ const totalShishaBalance = computed(() => {
             </div>
             <div v-if="kyc && kyc.status === 'approved'">
                 <button
+                    v-if="totalShishaBalance && totalShishaBalance > 0"
                     class="bg-gradient-to-r mt-2 from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-semibold px-6 rounded-xl shadow-md hover:shadow-lg transition duration-300 ease-in-out">
                     Request Withdrawal
                 </button>
