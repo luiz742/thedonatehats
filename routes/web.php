@@ -13,9 +13,7 @@ use App\Http\Controllers\WalletController;
 use App\Http\Controllers\Admin\DonationController as AdminDonationController;
 use App\Http\Controllers\WithdrawalController;
 
-Route::middleware(['auth'])->group(function () {
-    Route::post('/withdrawal/request', [WithdrawalController::class, 'request']);
-});
+Route::post('/withdrawals', [WithdrawalController::class, 'store'])->middleware(['auth', 'verified']);
 
 Route::get('/test-check/{address}', [WalletController::class, 'checkDeposits']);
 

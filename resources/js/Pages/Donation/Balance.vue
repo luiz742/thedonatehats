@@ -1,30 +1,30 @@
 <script setup>
 import { computed, ref } from 'vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
+import { router } from '@inertiajs/vue3';
 
 const solanaWallet = ref('');
 const selectedDonationId = ref(null); // Inicializa o valor com null
 const showModal = ref(false);
 
-// Função para requisitar o saque
-const requestWithdrawal = async () => {
+const requestWithdrawal = () => {
     if (!selectedDonationId.value || !solanaWallet.value) {
         alert("Please select a donation and provide a wallet address.");
         return;
     }
 
-    try {
-        const response = await axios.post('/withdrawal/request', {
-            solana_wallet: solanaWallet.value,
-            donation_id: selectedDonationId.value
-        });
-
-        alert('Withdrawal request submitted!');
-        showModal.value = false; // Fecha o modal após o pedido de retirada
-        solanaWallet.value = ''; // Limpa o campo da carteira
-    } catch (err) {
-        alert('Failed to request withdrawal');
-    }
+    router.post('/withdrawals', {
+        solana_wallet: solanaWallet.value,
+        donation_id: selectedDonationId.value
+    }, {
+        onSuccess: () => {
+            showModal.value = false;
+            solanaWallet.value = '';
+        },
+        onError: (errors) => {
+            console.error(errors); // Você pode lidar melhor com os erros aqui, exibir toast, etc.
+        }
+    });
 };
 
 const props = defineProps({
