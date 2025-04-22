@@ -28,4 +28,14 @@ class Donation extends Model
     {
         return $this->belongsTo(Wallet::class);
     }
+
+    public function withdrawal()
+    {
+        return $this->hasOne(Withdrawal::class);
+    }
+
+    public function wasWithdrawn()
+    {
+        return $this->withdrawal()->exists();
+    }
 }

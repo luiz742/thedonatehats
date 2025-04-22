@@ -80,7 +80,7 @@ const logout = () => {
                                 </NavLink>
 
                                 <NavLink v-if="$page.props.auth.user && $page.props.auth.user.is_admin"
-                                    :href="route('admin.donations.index')" :active="route().current('dashboard')">
+                                    :href="route('admin.withdrawals.index')" :active="route().current('dashboard')">
                                     Withdraw Request
                                 </NavLink>
 

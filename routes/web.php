@@ -11,6 +11,11 @@ use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\WalletController;
 use App\Http\Controllers\Admin\DonationController as AdminDonationController;
+use App\Http\Controllers\WithdrawalController;
+
+Route::middleware(['auth'])->group(function () {
+    Route::post('/withdrawal/request', [WithdrawalController::class, 'request']);
+});
 
 Route::get('/test-check/{address}', [WalletController::class, 'checkDeposits']);
 
@@ -49,6 +54,11 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', AdminMiddleware::cla
     Route::post('/kyc/{id}/reject', [\App\Http\Controllers\Admin\KycController::class, 'reject'])->name('admin.kycs.reject');
 
     Route::resource('donations', AdminDonationController::class)->only(['index', 'show', 'destroy']);
+
+    Route::get('/withdrawals', [\App\Http\Controllers\Admin\WithdrawalController::class, 'index'])->name('withdrawals.index');
+    Route::post('/withdrawals/{id}/approve', [\App\Http\Controllers\Admin\WithdrawalController::class, 'approve'])->name('withdrawals.approve');
+    Route::post('/withdrawals/{id}/reject', [\App\Http\Controllers\Admin\WithdrawalController::class, 'reject'])->name('withdrawals.reject');
+    Route::get('/withdrawals/{id}', [\App\Http\Controllers\Admin\WithdrawalController::class, 'edit'])->name('withdrawals.edit');
 });
 
 // Route for the homepage
