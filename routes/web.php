@@ -12,14 +12,20 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\WalletController;
 use App\Http\Controllers\Admin\DonationController as AdminDonationController;
 use App\Http\Controllers\WithdrawalController;
+use App\Http\Controllers\Admin\WalletWithdrawalController;
 
 Route::post('/withdrawals', [WithdrawalController::class, 'store'])->middleware(['auth', 'verified']);
 
 Route::get('/test-check/{address}', [WalletController::class, 'checkDeposits']);
-
+Route::post('/fundWalletWithTrx', [WalletController::class, 'fundWalletWithTrx']);
 // Protect routes that require authentication
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/wallet', [WalletController::class, 'index'])->name('wallet.index');
+    // web.php
+    Route::get('/wallets/balances', [WalletController::class, 'getBalances']);
+    Route::get('/wallets/usdt/balances', [WalletController::class, 'getRealBalances']);
+    Route::get('/wallets/{wallet}/balance', [WalletController::class, 'getBalance']);
+
     Route::post('/wallet/generate', [WalletController::class, 'generate'])->name('wallet.generate');
 
     // Donation routes
@@ -57,6 +63,11 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', AdminMiddleware::cla
     Route::post('/withdrawals/{id}/approve', [\App\Http\Controllers\Admin\WithdrawalController::class, 'approve'])->name('withdrawals.approve');
     Route::post('/withdrawals/{id}/reject', [\App\Http\Controllers\Admin\WithdrawalController::class, 'reject'])->name('withdrawals.reject');
     Route::get('/withdrawals/{id}', [\App\Http\Controllers\Admin\WithdrawalController::class, 'edit'])->name('withdrawals.edit');
+
+    Route::get('/wallet-withdrawals', [WalletWithdrawalController::class, 'index'])->name('wallet.withdrawals');
+    Route::post('/wallet-withdrawals/{wallet}/withdraw', [WalletWithdrawalController::class, 'withdraw'])->name('wallet.withdraw');
+    Route::post('/wallets/{wallet}/fund', [WalletWithdrawalController::class, 'fundWallet'])->name('wallet.fund');
+
 });
 
 // Route for the homepage

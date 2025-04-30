@@ -1,24 +1,45 @@
-// tronweb/send_usdt.js
 const TronWeb = require('tronweb');
 
-// Configuração para Shasta
+// ✅ Contrato USDT oficial na rede Shasta
+const contractAddress = 'TG3XXyExBkPp9nzdajDZsozEu4BkaSJozs';
+
+// Parâmetros recebidos
+const privateKey = process.argv[2];
+const toAddress = process.argv[3];
+const amount = process.argv[4];
+
 const tronWeb = new TronWeb({
     fullHost: 'https://api.shasta.trongrid.io',
-    privateKey: process.argv[2], // chave privada da carteira de origem
+    privateKey: privateKey
 });
 
-const USDT_CONTRACT = 'TXYZopYRdj2D9XRtbG411XZZ3kM5VkAeBf'; // contrato USDT TRC20 em Shasta
-
-async function sendUSDT(to, amount) {
+(async () => {
     try {
-        const contract = await tronWeb.contract().at(USDT_CONTRACT);
+        console.log("🔄 Iniciando envio de USDT...");
+        const contract = await tronWeb.contract().at(contractAddress);
+        console.log("✅ Contrato carregado com sucesso.");
 
-        const tx = await contract.transfer(to, amount * 1_000_000).send();
+        const usdtAmount = tronWeb.toSun(amount);
+        console.log(`🚀 Enviando ${amount} USDT (${usdtAmount} sun) para ${toAddress}`);
 
-        console.log(JSON.stringify({ success: true, tx_id: tx }));
+        // Envia a transação
+        const tx = await contract.transfer(toAddress, usdtAmount).send({
+            feeLimit: 100_000_000
+        });
+
+        console.log("✅ Transação enviada:", tx);
+
+        console.log(JSON.stringify({
+            success: true,
+            tx_id: tx
+        }));
     } catch (error) {
-        console.error(JSON.stringify({ success: false, error: error.message }));
-    }
-}
+        console.error('❌ Erro no envio:', error);
 
-sendUSDT(process.argv[3], parseFloat(process.argv[4]));
+        const errMsg = error?.message || error?.toString() || 'Erro desconhecido';
+        console.log(JSON.stringify({
+            success: false,
+            error: errMsg
+        }));
+    }
+})();

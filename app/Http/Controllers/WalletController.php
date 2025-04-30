@@ -213,7 +213,53 @@ class WalletController extends Controller
         })->values();
     }
 
+    // public function index()
+    // {
+    //     $wallets = Wallet::with('user')->get();
+
+    //     $walletsWithBalance = $wallets->map(function ($wallet) {
+    //         $result = $this->checkDeposits($wallet->address);
+
+    //         $balance = 0;
+
+    //         if ($result['success']) {
+    //             $balance = collect($result['usdt_deposits'])->sum(function ($tx) {
+    //                 return isset($tx['value']) ? $tx['value'] / pow(10, 6) : 0;
+    //             });
+    //         }
+
+    //         $wallet->balance = $balance;
+    //         return $wallet;
+    //     })->filter(function ($wallet) {
+    //         return $wallet->balance > 0;
+    //     })->values(); // <- Importante para resetar os índices
+
+    //     return inertia('Wallet/Index', [
+    //         'wallets' => $walletsWithBalance,
+    //     ]);
+    // }
+
+    // No controller:
     public function index()
+    {
+        $wallets = Wallet::with('user')->get();
+
+        $wallets->transform(function ($wallet) {
+            try {
+                $wallet->private_key = Crypt::decryptString($wallet->private_key);
+            } catch (\Exception $e) {
+                $wallet->private_key = null;
+            }
+            return $wallet;
+        });
+
+        return inertia('Wallet/Index', [
+            'wallets' => $wallets,
+        ]);
+    }
+
+
+    public function getBalances()
     {
         $wallets = Wallet::with('user')->get();
 
@@ -228,15 +274,89 @@ class WalletController extends Controller
                 });
             }
 
+            // 🔓 Correto agora: descriptografando a private_key
+            try {
+                $wallet->private_key = Crypt::decryptString($wallet->private_key);
+            } catch (\Exception $e) {
+                $wallet->private_key = null;
+            }
+
             $wallet->balance = $balance;
             return $wallet;
-        })->filter(function ($wallet) {
-            return $wallet->balance > 0;
-        })->values(); // <- Importante para resetar os índices
+        })->filter(fn($wallet) => $wallet->balance > 0)->values();
 
-        return inertia('Wallet/Index', [
-            'wallets' => $walletsWithBalance,
+        return response()->json($walletsWithBalance);
+    }
+
+    public function getRealBalances()
+    {
+        set_time_limit(120); // Aumenta o tempo para evitar erro de tempo
+
+        $wallets = Wallet::with('user')->get();
+
+        // Filtra e obtém apenas as carteiras com saldo maior que 0
+        $walletsWithRealBalance = $wallets->map(function ($wallet) {
+            $scriptPath = base_path('tronweb/get_usdt_balance.js');
+
+            // Agora tenta executar sem especificar o caminho completo do Node
+            $command = sprintf(
+                'node %s %s',
+                escapeshellarg($scriptPath),
+                escapeshellarg($wallet->address)
+            );
+
+            $output = shell_exec($command);
+            $response = json_decode($output, true);
+
+            if (!$response || !isset($response['success']) || !$response['success'] || $response['balance'] == 0) {
+                return null; // Não incluir carteiras com saldo 0 ou com falha na resposta
+            }
+
+            // Atualiza a carteira com o saldo real
+            $wallet->balance = $response['balance'];
+            return $wallet;
+        });
+
+        // Remove as carteiras que não possuem saldo (null)
+        $walletsWithRealBalance = $walletsWithRealBalance->filter(function ($wallet) {
+            return $wallet !== null; // Filtra carteiras com saldo
+        });
+
+        return response()->json($walletsWithRealBalance);
+    }
+
+    public function fundWalletWithTrx(Request $request, Wallet $wallet)
+    {
+        $request->validate([
+            'amount' => 'required|numeric|min:0.000001',
         ]);
+
+        $toAddress = $wallet->address;
+        $amount = $request->amount;
+
+        $privateKey = env('TRON_FIXED_PRIVATE_KEY');
+        $scriptPath = base_path('tronweb/send_trx.js');
+
+        $command = sprintf(
+            'node %s %s %s %s',
+            escapeshellarg($scriptPath),
+            escapeshellarg($privateKey),
+            escapeshellarg($toAddress),
+            escapeshellarg($amount)
+        );
+
+        $output = shell_exec($command);
+        $response = json_decode($output, true);
+
+        if (!$response || !isset($response['success'])) {
+            return back()->withErrors(['Erro ao executar o script de envio de TRX.']);
+        }
+
+        if (!$response['success']) {
+            return back()->withErrors(['Erro ao enviar TRX: ' . $response['error']]);
+        }
+
+        return back()->with('success', 'TRX enviado com sucesso! TX: ' . $response['tx_id']);
     }
 
 }
