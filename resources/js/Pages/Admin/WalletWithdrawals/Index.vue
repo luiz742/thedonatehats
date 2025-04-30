@@ -32,7 +32,6 @@ const openMessageModal = (message) => {
 
 const fetchWalletsWithBalances = async () => {
     try {
-        // const response = await axios.get('/wallets/balances')
         const response = await axios.get('/wallets/usdt/balances')
         wallets.value = response.data
     } finally {
@@ -50,24 +49,21 @@ const withdraw = (walletId, amount) => {
         onSuccess: (page) => {
             loading.value = null
 
-            // Verifica explicitamente se a resposta contém sucesso
             if (page.props.flash?.success) {
-                openMessageModal('Saque realizado com sucesso!')
+                openMessageModal('Withdrawal completed successfully!')
 
-                // Remove a carteira da lista após o saque bem-sucedido
                 wallets.value = wallets.value.filter(wallet => wallet.id !== walletId)
             } else {
-                openMessageModal('Ocorreu um erro durante o saque. Verifique os logs ou tente novamente.')
+                openMessageModal('An error occurred during withdrawal. Check the logs or try again.')
             }
         },
         onError: (errors) => {
             loading.value = null
-            const errorMsg = errors.message || 'Erro desconhecido no saque.'
-            openMessageModal('Erro: ' + errorMsg)
+            const errorMsg = errors.message || 'Unknown withdrawal error.'
+            openMessageModal('Error: ' + errorMsg)
         }
     })
 }
-
 
 const fundWallet = (walletId) => {
     const amount = 10
@@ -77,17 +73,18 @@ const fundWallet = (walletId) => {
         .then((response) => {
             loading.value = null
             if (response.data.success) {
-                openMessageModal('TRX enviado com sucesso! TX ID: ' + response.data.tx_id)
+                openMessageModal('TRX sent successfully! TX ID: ' + response.data.tx_id)
             } else {
-                openMessageModal('Erro ao enviar TRX: ' + response.data.message)
+                openMessageModal('Error sending TRX: ' + response.data.message)
             }
         })
         .catch(() => {
             loading.value = null
-            openMessageModal('Erro ao enviar a requisição.')
+            openMessageModal('Error sending request.')
         })
 }
 </script>
+
 
 <template>
     <AppLayout title="Withdraw USDT">
