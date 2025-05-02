@@ -21,6 +21,7 @@
         "vue": "^3.3.13"
     },
     "dependencies": {
-        "lucide-vue-next": "^0.503.0"
+        "lucide-vue-next": "^0.503.0",
+        "qrcode": "^1.5.4"
     }
 }

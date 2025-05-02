@@ -2,6 +2,7 @@
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { defineProps, ref, watch, onBeforeUnmount } from 'vue';
 import axios from 'axios';
+import QRCode from 'qrcode';
 
 const props = defineProps({
     deposits: Array,
@@ -15,6 +16,8 @@ const donationPending = ref(null);
 const donationCompleted = ref(false);
 const copied = ref(false);
 let pollingInterval = null;
+const isLoading = ref(false);
+
 
 const openModal = () => showModal.value = true;
 
@@ -30,15 +33,21 @@ const closeModal = () => {
 const donate = async () => {
     if (!selectedAmount.value) return;
 
-    const response = await axios.post('/donations', {
-        amount: selectedAmount.value,
-    });
+    isLoading.value = true;
+    try {
+        const response = await axios.post('/donations', {
+            amount: selectedAmount.value,
+        });
 
-    donationPending.value = response.data.donation;
-
-    // Iniciar verificação periódica
-    startPollingDonation();
+        donationPending.value = response.data.donation;
+        startPollingDonation();
+    } catch (error) {
+        console.error('Error creating donation:', error);
+    } finally {
+        isLoading.value = false;
+    }
 };
+
 
 const copyToClipboard = () => {
     navigator.clipboard.writeText(donationPending.value.wallet_address);
@@ -63,6 +72,14 @@ const startPollingDonation = () => {
 
 onBeforeUnmount(() => {
     clearInterval(pollingInterval);
+});
+
+const qrCodeDataUrl = ref('');
+
+watch(donationPending, async (newVal) => {
+    if (newVal?.wallet_address) {
+        qrCodeDataUrl.value = await QRCode.toDataURL(newVal.wallet_address);
+    }
 });
 </script>
 
@@ -115,15 +132,28 @@ onBeforeUnmount(() => {
                                         {{ amount }} USD
                                     </button>
                                 </div>
-                                <button @click="donate"
-                                    class="w-full bg-green-600 hover:bg-green-500 text-white py-2 rounded-lg text-lg font-semibold">
-                                    ✅ Confirm Donation
+                                <button @click="donate" :disabled="isLoading"
+                                    class="w-full bg-green-600 hover:bg-green-500 text-white py-2 rounded-lg text-lg font-semibold flex items-center justify-center gap-2">
+                                    <svg v-if="isLoading" class="animate-spin h-5 w-5 text-white"
+                                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                            stroke-width="4" />
+                                        <path class="opacity-75" fill="currentColor"
+                                            d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 11-8 8z" />
+                                    </svg>
+                                    <span>{{ isLoading ? 'Generating Wallet...' : '✅ Confirm Donation' }}</span>
                                 </button>
+
                             </div>
 
                             <!-- Step 2: Payment Instructions -->
                             <div v-else-if="!donationCompleted">
                                 <h2 class="text-xl font-semibold text-center text-gray-800 mb-3">Awaiting Payment</h2>
+                                <!-- QR Code -->
+                                <div class="flex justify-center mt-4" v-if="qrCodeDataUrl">
+                                    <img :src="qrCodeDataUrl" alt="QR Code"
+                                        class="w-40 h-40 border rounded-lg shadow" />
+                                </div>
                                 <p class="text-gray-600 text-sm text-center mb-3">
                                     Please send <strong>{{ donationPending.amount }} USDT</strong><br />
                                     <span class="text-xs text-gray-500">(TRC20 - Tron Network)</span>
@@ -143,7 +173,8 @@ onBeforeUnmount(() => {
 
                                 <p class="text-xs text-gray-500 text-center mt-4">
                                     The donation will be confirmed automatically after we detect the payment.
-                                    <br>Make sure to send exactly amount. If you send less or more, your transaction will not be confirmed. Contact our tech support.
+                                    <br>Make sure to send exactly amount. If you send less or more, your transaction
+                                    will not be confirmed. Contact our tech support.
                                 </p>
 
                             </div>
