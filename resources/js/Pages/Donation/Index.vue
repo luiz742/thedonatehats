@@ -134,13 +134,9 @@ watch(donationPending, async (newVal) => {
                                 </div>
                                 <button @click="donate" :disabled="isLoading"
                                     class="w-full bg-green-600 hover:bg-green-500 text-white py-2 rounded-lg text-lg font-semibold flex items-center justify-center gap-2">
-                                    <svg v-if="isLoading" class="animate-spin h-5 w-5 text-white"
-                                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
-                                            stroke-width="4" />
-                                        <path class="opacity-75" fill="currentColor"
-                                            d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 11-8 8z" />
-                                    </svg>
+                                    <div v-if="isLoading"
+                                        class="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin">
+                                    </div>
                                     <span>{{ isLoading ? 'Generating Wallet...' : '✅ Confirm Donation' }}</span>
                                 </button>
 
