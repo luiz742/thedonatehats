@@ -10,7 +10,7 @@ const props = defineProps({
 });
 
 const selectedAmount = ref(null);
-const amounts = [100, 500, 1000, 2000];
+const amounts = [100, 500, 2500, 5000];
 const showModal = ref(false);
 const donationPending = ref(null);
 const donationCompleted = ref(false);

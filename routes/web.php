@@ -24,6 +24,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // web.php
     Route::get('/wallets/balances', [WalletController::class, 'getBalances']);
     Route::get('/wallets/usdt/balances', [WalletController::class, 'getRealBalances']);
+    Route::get('/wallets/{address}/balance', [WalletController::class, 'getWalletBalance']);
     Route::get('/wallets/{wallet}/balance', [WalletController::class, 'getBalance']);
 
     Route::post('/wallet/generate', [WalletController::class, 'generate'])->name('wallet.generate');

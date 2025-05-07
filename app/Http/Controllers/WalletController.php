@@ -325,6 +325,8 @@ class WalletController extends Controller
         return response()->json($walletsWithRealBalance);
     }
 
+
+
     public function fundWalletWithTrx(Request $request, Wallet $wallet)
     {
         $request->validate([

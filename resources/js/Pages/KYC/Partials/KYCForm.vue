@@ -29,7 +29,7 @@ const kycStatus = computed(() => {
         approved: { label: 'Approved', color: 'bg-green-500' },
         pending: { label: 'Pending', color: 'bg-yellow-500' },
         rejected: { label: 'Rejected', color: 'bg-red-500' },
-        unverified: { label: 'Unverified', color: 'bg-gray-500' }
+        unverified: { label: 'Unverified', color: 'bg-orange-500' }
     };
     return statusMap[status] || statusMap.unverified;
 });
