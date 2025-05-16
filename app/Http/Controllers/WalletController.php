@@ -213,33 +213,6 @@ class WalletController extends Controller
         })->values();
     }
 
-    // public function index()
-    // {
-    //     $wallets = Wallet::with('user')->get();
-
-    //     $walletsWithBalance = $wallets->map(function ($wallet) {
-    //         $result = $this->checkDeposits($wallet->address);
-
-    //         $balance = 0;
-
-    //         if ($result['success']) {
-    //             $balance = collect($result['usdt_deposits'])->sum(function ($tx) {
-    //                 return isset($tx['value']) ? $tx['value'] / pow(10, 6) : 0;
-    //             });
-    //         }
-
-    //         $wallet->balance = $balance;
-    //         return $wallet;
-    //     })->filter(function ($wallet) {
-    //         return $wallet->balance > 0;
-    //     })->values(); // <- Importante para resetar os índices
-
-    //     return inertia('Wallet/Index', [
-    //         'wallets' => $walletsWithBalance,
-    //     ]);
-    // }
-
-    // No controller:
     public function index()
     {
         $wallets = Wallet::with('user')->get();
@@ -324,7 +297,6 @@ class WalletController extends Controller
 
         return response()->json($walletsWithRealBalance);
     }
-
 
 
     public function fundWalletWithTrx(Request $request, Wallet $wallet)
